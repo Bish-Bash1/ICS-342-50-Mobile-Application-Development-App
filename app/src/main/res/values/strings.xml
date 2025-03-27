@@ -4,4 +4,8 @@
     <string name="temperature">72°</string>
     <string name="feels_like">Feels like 78°</string>
     <string name="weather_details">Low 65°\nHigh 80°\nHumidity 100%\nPressure 1023 hPa</string>
+    <string name="temperature_format">%d°</string>
+    <string name="feels_like_format">Feels like %d°</string>
+    <string name="weather_details_format">Low %d°\nHigh %d°\nHumidity %d%%\nPressure %d hPa</string>
+    <string name="loading">Loading...</string>
 </resources>

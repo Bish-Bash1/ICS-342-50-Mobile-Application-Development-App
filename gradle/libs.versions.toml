@@ -38,6 +38,12 @@ squareupRetrofit = "2.3.0"
 ui = "1.2.0"
 uiTooling = "1.5.4"
 runtimeLivedataVersion = "1.7.8"
+material = "1.10.0"
+appcompat = "1.6.1"
+constraintlayout = "2.1.4"
+navigationFragmentKtx = "2.8.7"
+navigationUiKtx = "2.8.7"
+activity = "1.10.1"
 
 [libraries]
 adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "adapterRxjava2" }
@@ -91,6 +97,12 @@ squareup-converter-kotlinx-serialization = { module = "com.squareup.retrofit2:co
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
 runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedataVersion" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

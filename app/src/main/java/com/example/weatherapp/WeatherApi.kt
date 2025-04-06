@@ -13,11 +13,18 @@ interface WeatherApi {
         @Query("units") units: String = "metric"
     ): WeatherResponse
 
+    @GET("forecast/daily")
+    suspend fun getForecast(
+        @Query("q") location: String,
+        @Query("appid") apiKey: String,
+        @Query("units") units: String = "metric",
+        @Query("cnt") count: Int = 16
+    ): ForecastResponse
 
-    companion object{
+    companion object {
         private const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
 
-        fun create(): WeatherApi{
+        fun create(): WeatherApi {
             val retrofit = Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(BASE_URL)

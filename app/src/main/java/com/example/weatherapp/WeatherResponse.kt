@@ -20,19 +20,8 @@ data class Weather(
 )
 
 data class ForecastResponse(
-    val city: ForecastCity,
-    val list: List<ForecastItem>
-)
-
-data class ForecastCity(
-    val name: String,
-    val country: String,
-    val coord: Coordinates
-)
-
-data class Coordinates(
-    val lat: Double,
-    val lon: Double
+    val list: List<ForecastItem>,
+    val city: ForecastCity
 )
 
 data class ForecastItem(
@@ -61,16 +50,14 @@ data class ForecastWeather(
     val icon: String
 )
 
-data class Clouds(
-    val all: Int
+data class ForecastCity(
+    val name: String,
+    val country: String,
+    val coord: Coordinates
 )
 
-data class Wind(
-    val speed: Double,
-    val deg: Int,
-    val gust: Double
+data class Coordinates(
+    val lat: Double,
+    val lon: Double
 )
 
-data class ForecastSys(
-    val pod: String
-)

@@ -2,6 +2,7 @@ package com.example.weatherapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -35,6 +36,8 @@ class MainActivity2 : ComponentActivity() {
 fun ForecastScreen(zipCode: String) {
     val viewModel: WeatherViewModel = viewModel()
     val forecastData by viewModel.forecastData.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val error by viewModel.error.collectAsState()
     val context = LocalContext.current
 
     val apiKey = "6af5deed7a5f157df39fc6d53bd67781"
@@ -42,6 +45,13 @@ fun ForecastScreen(zipCode: String) {
     LaunchedEffect(zipCode) {
         if (zipCode.isNotEmpty()) {
             viewModel.fetchForecast("$zipCode,us", apiKey, context)
+        }
+    }
+
+    LaunchedEffect(error) {
+        error?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            viewModel.clearError()
         }
     }
 
@@ -59,30 +69,68 @@ fun ForecastScreen(zipCode: String) {
             modifier = Modifier.padding(vertical = 8.dp)
         )
 
-        if (zipCode.isEmpty()) {
-            Text(
-                text = "Please enter a ZIP code on the main screen",
-                color = Color.Gray,
-                modifier = Modifier.padding(8.dp)
-            )
-        } else {
-            forecastData?.let { forecast ->
+        when {
+            isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            zipCode.isEmpty() -> {
+                Text(
+                    text = "Please enter a ZIP code on the main screen",
+                    color = Color.Gray,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+            error != null -> {
+                Text(
+                    text = error ?: "An unknown error occurred",
+                    color = Color.Red,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+            forecastData == null -> {
+                Text(
+                    text = "No forecast data available",
+                    color = Color.Gray,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+            forecastData?.list?.isEmpty() == true -> {
+                Text(
+                    text = "No forecast data available for this location",
+                    color = Color.Gray,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+            else -> {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    items(forecast.list) { item ->
-                        ForecastItemCard(item)
+                    items(
+                        items = forecastData?.list ?: emptyList(),
+                        key = { it.dt }
+                    ) { item ->
+                        DailyForecastCard(
+                            DailyForecastSummary(
+                                date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                    .format(Date(item.dt * 1000)),
+                                high = item.temp.max,
+                                low = item.temp.min,
+                                description = item.weather.firstOrNull()?.description ?: "",
+                                humidity = item.humidity
+                            )
+                        )
                     }
                 }
-            } ?: run {
-                Text(
-                    text = "Loading forecast data...",
-                    color = Color.Gray,
-                    modifier = Modifier.padding(8.dp)
-                )
             }
         }
 
@@ -94,16 +142,25 @@ fun ForecastScreen(zipCode: String) {
             colors = ButtonDefaults.buttonColors(Color.Blue),
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
-            Text(text = "Back to Current Weather")
+            Text("Back to Current Weather")
         }
     }
 }
 
+data class DailyForecastSummary(
+    val date: String,
+    val high: Double,
+    val low: Double,
+    val description: String,
+    val humidity: Int
+)
+
 @Composable
-fun ForecastItemCard(item: ForecastItem) {
-    val date = Date(item.dt * 1000)
+fun DailyForecastCard(item: DailyForecastSummary) {
+    val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(item.date)
     val dateFormat = SimpleDateFormat("EEE, MMM d", Locale.getDefault())
-    
+    val highTempF = (item.high * 9/5) + 32
+    val lowTempF = (item.low * 9/5) + 32
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -132,7 +189,7 @@ fun ForecastItemCard(item: ForecastItem) {
                     color = Color.Blue
                 )
                 Text(
-                    text = item.weather[0].description.capitalize(),
+                    text = item.description.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -141,17 +198,17 @@ fun ForecastItemCard(item: ForecastItem) {
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = "H: ${String.format("%.0f°F", (item.temp.max * 9 / 5) + 32)}",
+                    text = "H: ${String.format(Locale.US, "%.0f°F", highTempF)}",
                     fontSize = 14.sp,
                     color = Color.Red
                 )
                 Text(
-                    text = "L: ${String.format("%.0f°F", (item.temp.min * 9 / 5) + 32)}",
+                    text = "L: ${String.format(Locale.US, "%.0f°F", lowTempF)}",
                     fontSize = 14.sp,
                     color = Color.Blue
                 )
                 Text(
-                    text = "${item.humidity}% • ${String.format("%.0f mph", item.speed * 2.237)}",
+                    text = "${item.humidity}%",
                     fontSize = 12.sp,
                     color = Color.Gray
                 )

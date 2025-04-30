@@ -10,6 +10,7 @@ color white
 dimen fab_margin
 drawable ic_launcher_background
 drawable ic_launcher_foreground
+drawable ic_weather_notification
 drawable sun
 drawable weather_bg
 id FirstFragment
@@ -36,6 +37,8 @@ string loading
 string location
 string lorem_ipsum
 string next
+string notification_channel_description
+string notification_channel_name
 string previous
 string second_fragment_label
 string temperature

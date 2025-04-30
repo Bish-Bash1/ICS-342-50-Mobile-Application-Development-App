@@ -15,29 +15,65 @@ class WeatherViewModel : ViewModel() {
     private val _forecastData = MutableStateFlow<ForecastResponse?>(null)
     val forecastData: StateFlow<ForecastResponse?> = _forecastData
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
+
     private val weatherApi = WeatherApi.create()
+    private var lastForecastLocation: String? = null
+    private var lastForecastTime: Long = 0
+    private val CACHE_DURATION = 15 * 60 * 1000
 
     fun fetchWeather(location: String, apiKey: String, context: Context) {
         viewModelScope.launch {
             try {
+                _isLoading.value = true
+                _error.value = null
                 val response = weatherApi.getWeather(location, apiKey)
                 _weatherData.value = response
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(context, "Error fetching weather data: ${e.message}", Toast.LENGTH_LONG).show()
+                _error.value = "Error fetching weather data: ${e.message}"
+                Toast.makeText(context, _error.value, Toast.LENGTH_LONG).show()
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
     fun fetchForecast(location: String, apiKey: String, context: Context) {
+
+        if (location == lastForecastLocation && 
+            System.currentTimeMillis() - lastForecastTime < CACHE_DURATION && 
+            _forecastData.value != null) {
+            return
+        }
+
         viewModelScope.launch {
             try {
+                _isLoading.value = true
+                _error.value = null
                 val response = weatherApi.getForecast(location, apiKey)
-                _forecastData.value = response
+                if (response.list.isEmpty()) {
+                    _error.value = "No forecast data available for this location"
+                } else {
+                    _forecastData.value = response
+                    lastForecastLocation = location
+                    lastForecastTime = System.currentTimeMillis()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(context, "Error fetching forecast data: ${e.message}", Toast.LENGTH_LONG).show()
+                _error.value = "Error fetching forecast data: ${e.message}"
+                Toast.makeText(context, _error.value, Toast.LENGTH_LONG).show()
+            } finally {
+                _isLoading.value = false
             }
         }
+    }
+
+    fun clearError() {
+        _error.value = null
     }
 }

@@ -69,6 +69,7 @@ dependencies {
     implementation("androidx.compose.animation:animation-core")
     implementation("androidx.compose.material:material")
     implementation("androidx.compose.material:material-ripple")
+    implementation(libs.androidx.ui.test.junit4.android)
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     // Other dependencies
@@ -84,8 +85,23 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-    // Testing
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    // Testing dependencies
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:4.11.0")
+    testImplementation("org.mockito:mockito-inline:4.11.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    
+    // Android testing dependencies
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
+    androidTestImplementation("androidx.test:runner:1.5.0")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.8")
+    androidTestImplementation("androidx.compose.ui:ui-test-manifest:1.5.8")
+    
+    // Debug dependencies
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

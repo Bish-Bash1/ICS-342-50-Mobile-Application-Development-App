@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     ) { permissions ->
         when {
             permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) ||
-            permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                    permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                 startLocationService()
                 locationViewModel.getCurrentLocationWeather(this)
             }
@@ -144,7 +144,7 @@ fun WeatherScreen(onLocationClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(32.dp))
-            
+
             WeatherInputSection(
                 zipCode = zipCode,
                 onZipCodeChange = { newValue ->
@@ -160,9 +160,9 @@ fun WeatherScreen(onLocationClick: () -> Unit) {
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             WeatherCheckButton(
-                onCheckWeather = { 
+                onCheckWeather = {
                     if (zipCode.length == 5) {
                         viewModel.fetchWeather("$zipCode,us", apiKey, context)
                     } else {

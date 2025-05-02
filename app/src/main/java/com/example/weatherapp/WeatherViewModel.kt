@@ -28,13 +28,12 @@ class WeatherViewModel : ViewModel() {
 
     fun fetchWeather(location: String, apiKey: String, context: Context) {
         viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
             try {
-                _isLoading.value = true
-                _error.value = null
                 val response = weatherApi.getWeather(location, apiKey)
                 _weatherData.value = response
             } catch (e: Exception) {
-                e.printStackTrace()
                 _error.value = "Error fetching weather data: ${e.message}"
                 Toast.makeText(context, _error.value, Toast.LENGTH_LONG).show()
             } finally {
@@ -44,7 +43,6 @@ class WeatherViewModel : ViewModel() {
     }
 
     fun fetchForecast(location: String, apiKey: String, context: Context) {
-
         if (location == lastForecastLocation && 
             System.currentTimeMillis() - lastForecastTime < CACHE_DURATION && 
             _forecastData.value != null) {
@@ -52,9 +50,9 @@ class WeatherViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
             try {
-                _isLoading.value = true
-                _error.value = null
                 val response = weatherApi.getForecast(location, apiKey)
                 if (response.list.isEmpty()) {
                     _error.value = "No forecast data available for this location"
@@ -64,7 +62,6 @@ class WeatherViewModel : ViewModel() {
                     lastForecastTime = System.currentTimeMillis()
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
                 _error.value = "Error fetching forecast data: ${e.message}"
                 Toast.makeText(context, _error.value, Toast.LENGTH_LONG).show()
             } finally {
